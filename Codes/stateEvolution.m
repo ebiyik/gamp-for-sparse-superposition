@@ -27,13 +27,20 @@ function [E, serValSum] = stateEvolution(B, R, noiseParam, n, channel, monteCarl
                 sigma = sqrt(R*(E(t) + 1/noiseParam));
             case 'bec'
                 sigma = sqrt(R/fisher_exp(E(t)));
-                if E(t) < 5e-6
-                    sigma = 0;
+                if E(t) < 6e-5
+                    E(t+1:end) = 0;
+                    break;
                 elseif isnan(sigma)
                     sigma = sqrt(R/(5*(1-noiseParam)/(pi*sqrt(2*pi))));
                 end
             case 'bsc'
-                error('SE for BSC is not implemented yet');
+                sigma = sqrt(R/fisher_exp(E(t)));
+                if E(t) < 6e-5
+                    E(t+1:end) = 0;
+                    break;
+                elseif E(t) == 1
+                    sigma = sqrt(R/fisher_exp(0.9999999));
+                end
         end
         
         E(t+1) = 0;

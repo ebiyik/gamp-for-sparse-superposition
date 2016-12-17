@@ -1,14 +1,14 @@
-clearvars; close all;
+clearvars; hold oni
 
 %% parameters
 % general
-B = 4; % section length
-R = 1.55; % design rate
-channel = 'awgnc'; % awgnc | bec | bsc
-noiseParam = 15; % snr for awgn, epsilon for bec or bsc
-firstE = 2^-10; % the first E value (MSE value) for which the potential will be calculated
+B = 2; % section length
+R = 0.4; % design rate
+channel = 'bec'; % awgnc | bec | bsc
+noiseParam = 0.1; % snr for awgnc, epsilon for bec or bsc
+firstE = 2^-15.4; % the first E value (MSE value) for which the potential will be calculated
 lastE = 1; % a little bit more than the last E value (MSE value) for which the potential will be calculated (not exact because potential function fails for exact 1)
-exponentialStepSizeE = 0.05; % at each iteration, E value will be multiplied by 2^exponentialStepSizeE
+exponentialStepSizeE = 0.01; % at each iteration, E value will be multiplied by 2^exponentialStepSizeE
 monteCarloIterationCount = 20000; % The number of Monte Carlo iterations for the cases where B > 2
 
 % result saving and showing

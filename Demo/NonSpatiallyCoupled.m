@@ -11,15 +11,15 @@ n = 20; % the number of iterations
 % for decoder
 L = 1024; % the number of sections
 useHadamard = false; % true for using Hadamard-based operators, false otherwise
-decoderInstances = 5; % the results will be averaged over this-many runs, 0 to disable decoder (it may be problematic to have large number of instances for BEC and BSC, as they occasionally fail due to NaNs, Infs, etc.)
+decoderInstances = 3; % the results will be averaged over this-many runs, 0 to disable decoder (it may be problematic to have large number of instances for BEC and BSC, as they occasionally fail due to NaNs, Infs, etc.)
 decoderShowPlot = true; % true for showing, false for no plot
 useMse = true; % true to use average MSE for evaluation, false to use SER
 saveMemory = false; % true for generating only the result, false for all iterations. It will be set to false if decoderShowPlot is true.
 
 % for state evolution (B, R, channel, noiseParam, n, useMse are from the decoder parameters above.)
-stateEvolutionInstances = 5; % the results will be averaged over this many runs, 0 to disable state evolution (it may be problematic to have large number of instances for BEC and BSC, as they occasionally fail due to NaNs, Infs, etc.)
+stateEvolutionInstances = 3; % the results will be averaged over this many runs, 0 to disable state evolution (it may be problematic to have large number of instances for BEC and BSC, as they occasionally fail due to NaNs, Infs, etc.)
 stateEvolutionShowPlot = true; % true for showing, false for no plot
-monteCarloIterationCount = 10000;  % The number of Monte Carlo iterations
+monteCarloIterationCount = 20000;  % The number of Monte Carlo iterations
 
 % result saving
 saveResults = true; % true for saving, false for not saving as a mat-file
