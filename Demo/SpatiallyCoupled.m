@@ -5,8 +5,8 @@ clearvars; close all;
 B = 32; % section length
 R = 2.2; % design rate
 L = 1024; % the number of sections
-channel = 'awgnc'; % awgnc | bec | bsc
-noiseParam = 100; % snr for awgn, epsilon for bec or bsc
+channel = 'awgnc'; % awgnc | bec | bsc | zc
+noiseParam = 100; % snr for awgn, epsilon for bec, bsc or zc
 n = 50; % the number of iterations 
 % spatially coupling
 betaSeed = 1.4; % the ratio between the height of seed and another block (only when the seed is larger first block)
@@ -18,7 +18,7 @@ Jright = 0.2; % variance of the window blocks are right. (Jleft is 1 by default)
 
 % for decoder
 useHadamard = true; % true for using Hadamard-based operators, false otherwise
-decoderInstances = 3; % the results will be averaged over this-many runs, 0 to disable decoder (it may be problematic to have large number of instances for BEC and BSC, as they occasionally fail due to NaNs, Infs, etc.)
+decoderInstances = 3; % the results will be averaged over this-many runs, 0 to disable decoder (it may be problematic to have large number of instances for BEC, BSC and ZC, as they occasionally fail due to NaNs, Infs, etc.)
 useMse = false; % true to use average MSE for evaluation, false to use SER
 saveMemory = false; % true for generating only the result, false for all iterations. It will be set to false if decoderShowPlot is true.
 

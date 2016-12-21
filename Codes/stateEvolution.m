@@ -14,6 +14,13 @@ function [E, serValSum] = stateEvolution(B, R, noiseParam, n, channel, monteCarl
         fisher = @(p,E) ((Q_p(p,E))^2)*(1-noiseParam)/max(Q(p,E)-Q(p,E)^2,1e-20);
         fisher_int = @(p,E) fisher(p,E) * exp(-(p^2)/(2*(1-E)))/sqrt(2*pi*(1-E));
         fisher_exp = @(E) integral(@(p) fisher_int(p,E),30*E-30,-30*E+30,'ArrayValued',true); % expectation of fisher info
+    elseif strcmpi(channel, 'zc')
+        Q = @(p,E) qfunc(-p/sqrt(E));
+        Q_p = @(p,E) exp(-(p^2)/(2*E))/sqrt(2*pi*E); % derivative of Q-function wrt p
+        fisher = @(p,E) ((Q_p(p,E)*(1-noiseParam))^2)/max(Q(p,E)+noiseParam*(1-Q(p,E)),1e-20) + ...
+            (Q_p(p,E)^2)*(1-noiseParam)/max(1-Q(p,E), 1e-20);
+        fisher_int = @(p,E) fisher(p,E) * exp(-(p^2)/(2*(1-E)))/sqrt(2*pi*(1-E));
+        fisher_exp = @(E) integral(@(p) fisher_int(p,E),30*E-30,-30*E+30,'ArrayValued',true); % expectation of fisher info
     end
 
 
@@ -31,6 +38,7 @@ function [E, serValSum] = stateEvolution(B, R, noiseParam, n, channel, monteCarl
                     E(t+1:end) = 0;
                     break;
                 elseif isnan(sigma)
+                    % an approximate value
                     sigma = sqrt(R/(5*(1-noiseParam)/(pi*sqrt(2*pi))));
                 end
             case 'bsc'
@@ -39,7 +47,17 @@ function [E, serValSum] = stateEvolution(B, R, noiseParam, n, channel, monteCarl
                     E(t+1:end) = 0;
                     break;
                 elseif E(t) == 1
+                    % an approximate value
                     sigma = sqrt(R/fisher_exp(0.9999999));
+                end
+            case 'zc'
+                sigma = sqrt(R/fisher_exp(E(t)));
+                if E(t) < 6e-5
+                    E(t+1:end) = 0;
+                    break;
+                elseif E(t) == 1
+                    % an approximate value
+                    sigma = sqrt(R/fisher_exp(0.99));
                 end
         end
         

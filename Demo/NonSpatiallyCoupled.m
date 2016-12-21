@@ -3,21 +3,21 @@ clearvars; close all;
 %% parameters
 % general
 B = 4; % section length
-R = 1.3; % design rate
-channel = 'awgnc'; % awgnc | bec | bsc
-noiseParam = 15; % snr for awgn, epsilon for bec or bsc
-n = 20; % the number of iterations 
+R = 0.35; % design rate
+channel = 'zc'; % awgnc | bec | bsc | zc
+noiseParam = 0.1; % snr for awgn, epsilon for bec, bsc or zc
+n = 30; % the number of iterations 
 
 % for decoder
 L = 1024; % the number of sections
 useHadamard = false; % true for using Hadamard-based operators, false otherwise
-decoderInstances = 3; % the results will be averaged over this-many runs, 0 to disable decoder (it may be problematic to have large number of instances for BEC and BSC, as they occasionally fail due to NaNs, Infs, etc.)
+decoderInstances = 10; % the results will be averaged over this-many runs, 0 to disable decoder (it may be problematic to have large number of instances for BEC, BSC and ZC, as they occasionally fail due to NaNs, Infs, etc.)
 decoderShowPlot = true; % true for showing, false for no plot
 useMse = true; % true to use average MSE for evaluation, false to use SER
 saveMemory = false; % true for generating only the result, false for all iterations. It will be set to false if decoderShowPlot is true.
 
 % for state evolution (B, R, channel, noiseParam, n, useMse are from the decoder parameters above.)
-stateEvolutionInstances = 3; % the results will be averaged over this many runs, 0 to disable state evolution (it may be problematic to have large number of instances for BEC and BSC, as they occasionally fail due to NaNs, Infs, etc.)
+stateEvolutionInstances = 10; % the results will be averaged over this many runs, 0 to disable state evolution (it may be problematic to have large number of instances for BEC, BSC and ZC, as they occasionally fail due to NaNs, Infs, etc.)
 stateEvolutionShowPlot = true; % true for showing, false for no plot
 monteCarloIterationCount = 20000;  % The number of Monte Carlo iterations
 
@@ -33,7 +33,7 @@ decoderShowPlot = decoderInstances > 0 && decoderShowPlot;
 saveMemory = ~decoderShowPlot && saveMemory;
 stateEvolutionShowPlot = stateEvolutionInstances > 0 && stateEvolutionShowPlot;
 if useMse; measure = 'Average MSE';
-else measure = 'SER'; end;
+else; measure = 'SER'; end;
 
 %% Decoder
 fprintf('Decoder runs are starting...\n');
@@ -75,6 +75,8 @@ for instanceNo=1:decoderInstances % Results will be averaged over instances
             multipliers(1:round(noiseParam*length(y(:)))) = 0;
             multipliers = multipliers(randperm(length(y)));
             y = (2*double(y>0)-1).*multipliers;
+        case 'zc'
+            y = 1 - 2*((rand(M,1) - noiseParam)>0).*(1-(y>0));
     end
 
     %% GAMP decoder step
