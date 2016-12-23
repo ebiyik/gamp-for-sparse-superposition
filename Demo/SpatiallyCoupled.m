@@ -2,29 +2,29 @@ clearvars; close all;
 
 %% parameters
 % general
-B = 32; % section length
-R = 2.2; % design rate
-L = 1024; % the number of sections
-channel = 'awgnc'; % awgnc | bec | bsc | zc
-noiseParam = 100; % snr for awgn, epsilon for bec, bsc or zc
-n = 50; % the number of iterations 
+B = 8; % section length
+R = 0.45; % design rate
+L = 2048; % the number of sections
+channel = 'zc'; % awgnc | bec | bsc | zc
+noiseParam = 0.1; % snr for awgn, epsilon for bec, bsc or zc
+n = 100; % the number of iterations 
 % spatially coupling
-betaSeed = 1.4; % the ratio between the height of seed and another block (only when the seed is larger first block)
+betaSeed = 1.01; % the ratio between the height of seed and another block (only when the seed is larger first block)
 Lr = 9; % the number of row blocks
 Lc = 8; % the number of column blocks (must divide B*L)
-wLeft = 7; % the number of window blocks at left
-wRight = 1; % the number of window blocks at right
-Jright = 0.2; % variance of the window blocks are right. (Jleft is 1 by default)
+wLeft = 2; % the number of window blocks at left
+wRight = 2; % the number of window blocks at right
+Jright = 0.09; % variance of the window blocks are right. (Jleft is 1 by default)
 
 % for decoder
 useHadamard = true; % true for using Hadamard-based operators, false otherwise
-decoderInstances = 3; % the results will be averaged over this-many runs, 0 to disable decoder (it may be problematic to have large number of instances for BEC, BSC and ZC, as they occasionally fail due to NaNs, Infs, etc.)
+decoderInstances = 1; % the results will be averaged over this-many runs, 0 to disable decoder (it may be problematic to have large number of instances for BEC, BSC and ZC, as they occasionally fail due to NaNs, Infs, etc.)
 useMse = false; % true to use average MSE for evaluation, false to use SER
-saveMemory = false; % true for generating only the result, false for all iterations. It will be set to false if decoderShowPlot is true.
+saveMemory = true; % true for generating only the result, false for all iterations. It will be set to false if decoderShowPlot is true.
 
 % result saving
 saveResults = false; % true for saving, false for not saving as a mat-file
-showPlot = true; % true for showing, false for no plot
+showPlot = false; % true for showing, false for no plot
 
 %%%%% A PRIORI NO NEED TO CHANGE ANYTHING BELOW THIS LINE %%%%%
 
@@ -104,6 +104,8 @@ for instanceNo=1:decoderInstances % Results will be averaged over instances
             multipliers(1:round(noiseParam*length(y(:)))) = 0;
             multipliers = multipliers(randperm(length(y)));
             y = (2*double(y>0)-1).*multipliers;
+        case 'zc'
+            y = 1 - 2*((rand(M,1) - noiseParam)>0).*(1-(y>0));
     end
 
     %% GAMP decoder step
@@ -181,6 +183,7 @@ if showPlot
     title('Block-by-Block Figure');
     xlabel('#Iterations');
     ylabel(measure);
+    axis([0 n 0.0001 1]);
 end
 
 if saveResults

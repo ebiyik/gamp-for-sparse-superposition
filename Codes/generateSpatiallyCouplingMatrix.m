@@ -17,15 +17,16 @@ function J = generateSpatiallyCouplingMatrix(wLeft, wRight, Lr, Lc, Jright)
     end
     
     %% the usual rows where there are (wLeft + 1) blocks with variance 1 and wRight block with variance Jright
-    for rowNo = 1:Lc-wLeft-wRight
+    for rowNo = 1:Lc-wLeft-wRight+1
         J(nextRowNo,rowNo:rowNo+wLeft) = 1;
         J(nextRowNo,rowNo+wLeft+1:rowNo+wLeft+wRight) = Jright;
         nextRowNo = nextRowNo + 1;
     end
     
     %% last rows
-    for rowNo = 1:wRight+1
-        J(nextRowNo,Lr-wLeft-wRight-1+rowNo:Lr-wRight) = 1;
+    for rowNo = 1:wRight
+        J(nextRowNo,Lr-wLeft-wRight+rowNo:Lr-wRight+rowNo) = 1;
+        J(nextRowNo,Lr-wRight+rowNo+1:end) = Jright;
         nextRowNo = nextRowNo + 1;
     end
 end
